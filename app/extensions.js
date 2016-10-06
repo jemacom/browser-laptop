@@ -175,6 +175,9 @@ const extensionInfo = {
   installInfo: {}
 }
 
+const isExtension = (componentId) =>
+  componentId !== config.widevineComponentId
+
 module.exports.init = () => {
   browserActions.init()
 
@@ -191,11 +194,13 @@ module.exports.init = () => {
   componentUpdater.on('component-update-updated', (e, extensionId, version) => {
     // console.log('update-updated', extensionId, version)
   })
-  componentUpdater.on('component-ready', (e, extensionId, extensionPath) => {
-    // console.log('component-ready', extensionId, extensionPath)
+  componentUpdater.on('component-ready', (e, componentId, extensionPath) => {
+    // console.log('component-ready', componentId, extensionPath)
     // Re-setup the loadedExtensions info if it exists
-    extensionInfo.setState(extensionId, extensionStates.REGISTERED)
-    loadExtension(extensionId, extensionPath)
+    extensionInfo.setState(componentId, extensionStates.REGISTERED)
+    if (isExtension(componentId)) {
+      loadExtension(componentId, extensionPath)
+    }
   })
   componentUpdater.on('component-not-updated', () => {
     // console.log('update-not-updated')
@@ -262,7 +267,7 @@ module.exports.init = () => {
     session.defaultSession.extensions.disable(extensionId)
   }
 
-  let registerExtension = (extensionId) => {
+  let registerComponent = (extensionId) => {
     if (!extensionInfo.isRegistered(extensionId) && !extensionInfo.isRegistering(extensionId)) {
       extensionInfo.setState(extensionId, extensionStates.REGISTERING)
       componentUpdater.registerComponent(extensionId)
@@ -280,33 +285,37 @@ module.exports.init = () => {
   extensionInfo.setState(config.braveExtensionId, extensionStates.REGISTERED)
   loadExtension(config.braveExtensionId, getExtensionsPath('brave'), generateBraveManifest(), 'component')
 
-  let registerExtensions = () => {
+  let registerComponents = () => {
     if (getSetting(settings.PDFJS_ENABLED)) {
-      registerExtension(config.PDFJSExtensionId)
+      registerComponent(config.PDFJSExtensionId)
     } else {
       disableExtension(config.PDFJSExtensionId)
     }
 
     const activePasswordManager = getSetting(settings.ACTIVE_PASSWORD_MANAGER)
     if (activePasswordManager === passwordManagers.ONE_PASSWORD) {
-      registerExtension(extensionIds[passwordManagers.ONE_PASSWORD])
+      registerComponent(extensionIds[passwordManagers.ONE_PASSWORD])
     } else {
       disableExtension(extensionIds[passwordManagers.ONE_PASSWORD])
     }
 
     if (activePasswordManager === passwordManagers.DASHLANE) {
-      registerExtension(extensionIds[passwordManagers.DASHLANE])
+      registerComponent(extensionIds[passwordManagers.DASHLANE])
     } else {
       disableExtension(extensionIds[passwordManagers.DASHLANE])
     }
 
     if (activePasswordManager === passwordManagers.LAST_PASS) {
-      registerExtension(extensionIds[passwordManagers.LAST_PASS])
+      registerComponent(extensionIds[passwordManagers.LAST_PASS])
     } else {
       disableExtension(extensionIds[passwordManagers.LAST_PASS])
     }
+
+    if (appStore.getState().getIn(['widevine', 'enabled'])) {
+      registerComponent(config.widevineComponentId)
+    }
   }
 
-  registerExtensions()
-  appStore.addChangeListener(registerExtensions)
+  registerComponents()
+  appStore.addChangeListener(registerComponents)
 }
