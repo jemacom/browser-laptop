@@ -1470,6 +1470,8 @@ class SecurityTab extends ImmutableComponent {
   render () {
     const lastPassPreferencesUrl = ('chrome-extension://' + extensionIds[passwordManagers.LAST_PASS] + '/tabDialog.html?dialog=preferences&cmd=open')
 
+    const isLinux = navigator.appVersion.indexOf('Linux') !== -1
+
     return <div>
       <div className='sectionTitle' data-l10n-id='privateData' />
       <SettingsList dataL10nId='privateDataMessage'>
@@ -1537,7 +1539,8 @@ class SecurityTab extends ImmutableComponent {
           }
         </span>
       </SettingsList>
-      <SettingsList>
+      { !isLinux
+      ? <SettingsList>
         <SettingCheckbox checked={this.props.braveryDefaults.get('widevine')} dataL10nId='enableWidevine' onChange={this.onToggleWidevine} />
         <div className='subtext'>
           <span data-l10n-id='enableWidevineSubtext' />
@@ -1556,6 +1559,8 @@ class SecurityTab extends ImmutableComponent {
           />
         </div>
       </SettingsList>
+      : null
+      }
       <SitePermissionsPage siteSettings={this.props.siteSettings} names={permissionNames} />
     </div>
   }
