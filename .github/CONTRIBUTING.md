@@ -50,3 +50,23 @@ Feel free to tag a Brave employee in the pull request to assign them to review y
 * Did you include tests? (we currently have both unit tests and web driver tests)
 * Did you manually test your new change?
 * If your change affects session, did you include steps to test? You may also consider manually testing an upgrade.
+
+## Closing issues
+
+* Issues should be in a closed state exactly when the code for the fix is landed on master.
+* Milestones should be added on issues for the Brave version it will be released in. This is usually the next version except when the code is frozen for that version, then it is often the second smallest version available.
+* If an issue is closed without a fix, because it was a duplicate, or perhaps it was invalid, then any milestone markers should be removed.
+* Follow-up issues should be created for follow-up issues, instead of re-opening an issue, unless the issue's code is reverted.
+
+## Triage help
+
+* Invalid bugs should be closed, tagged with invalid, or a comment should be added indicating that they should if you do not have permission.
+* Asking for more detail in an issue when it is needed is helpful.
+* Adding applicable labels to an issue is helpful.
+* Adding and finding duplicates, and linking them together is helpful.
+* Creating tracking issues for an area of work with multiple related issues is helpful.
+* Calling out things which seem important for extra attention is helpful.
+* Improving steps to reproduce is helpful.
+* Testing and adding a comment with "Could not reproduce" if an issue seems obscure is helpful.
+* Testing open pull requests: `git fetch origin pull/ID/HEAD:ID && checkout ID` is very helpful.
+* You can be granted write permission if you've helped a lot with triage by pinging @bbondy.
